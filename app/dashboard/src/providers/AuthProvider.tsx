@@ -630,17 +630,14 @@ export function SemiProtectedLayout() {
   const { session } = useAuth()
   const { localStorage } = localStorageProvider.useLocalStorage()
 
-  if (session?.type === UserSessionType.full) {
-    const redirectTo = localStorage.get('loginRedirect')
-    if (redirectTo != null) {
-      localStorage.delete('loginRedirect')
-      location.href = redirectTo
-      return
-    } else {
-      return <router.Navigate to={appUtils.DASHBOARD_PATH} />
-    }
-  } else if (session?.type !== UserSessionType.partial) {
-    return <router.Navigate to={appUtils.LOGIN_PATH} />
+  // user is not logged in, redirect to the login page.
+  if (session == null) {
+    return <router.Navigate to={appUtils.LOGIN_PATH} replace />
+    // User is registered, redirect to dashboard or to the redirect path specified during the registration / login.
+  } else if (session.type === UserSessionType.full) {
+    const redirectTo = localStorage.delete('loginRedirect') ?? appUtils.DASHBOARD_PATH
+    return <router.Navigate to={redirectTo} replace />
+    // User is in the process of registration, allow them to complete the registration.
   } else {
     return <router.Outlet context={session} />
   }

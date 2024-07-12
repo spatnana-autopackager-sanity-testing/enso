@@ -1,30 +1,19 @@
 /** @file A page in which the currently active payment plan can be changed. */
 import * as React from 'react'
 
-import * as reactQuery from '@tanstack/react-query'
+import * as paymentModule from '#/modules/payments'
 import * as router from 'react-router-dom'
 
 import Back from '#/assets/arrow_left.svg'
 
 import * as appUtils from '#/appUtils'
 
-import * as backendProvider from '#/providers/BackendProvider'
+import * as authProvider from '#/providers/AuthProvider'
 import * as textProvider from '#/providers/TextProvider'
 
 import * as ariaComponents from '#/components/AriaComponents'
 
 import * as backendModule from '#/services/Backend'
-
-import * as components from './components'
-import * as componentForPlan from './getComponentForPlan'
-
-/**
- * The mutation data for the `onCompleteMutation` mutation.
- */
-interface CreateCheckoutSessionMutation {
-  readonly plan: backendModule.Plan
-  readonly paymentMethodId: string
-}
 
 /** A page in which the currently active payment plan can be changed.
  *
@@ -40,33 +29,15 @@ interface CreateCheckoutSessionMutation {
  * paymentStatus: 'no_payment_required' || 'paid' || 'unpaid' }`).
  */
 export function Subscribe() {
-  const navigate = router.useNavigate()
   const { getText } = textProvider.useText()
+  const navigate = router.useNavigate()
+  const { user } = authProvider.useFullUserSession()
 
   const [searchParams] = router.useSearchParams()
-  const backend = backendProvider.useRemoteBackendStrict()
 
-  const plan = searchParams.get('plan')
+  const maybePlan = searchParams.get('plan')
 
-  const onCompleteMutation = reactQuery.useMutation({
-    mutationFn: async (mutationData: CreateCheckoutSessionMutation) => {
-      const { id } = await backend.createCheckoutSession({
-        plan: mutationData.plan,
-        paymentMethodId: mutationData.paymentMethodId,
-      })
-      return backend.getCheckoutSession(id)
-    },
-    onSuccess: (data, mutationData) => {
-      if (['trialing', 'active'].includes(data.status)) {
-        navigate({ pathname: appUtils.SUBSCRIBE_SUCCESS_PATH, search: `plan=${mutationData.plan}` })
-        return
-      } else {
-        throw new Error(
-          'Session not complete, please contact the support team or try with another payment method.'
-        )
-      }
-    },
-  })
+  const chosenPlan = backendModule.isPlan(maybePlan) ? maybePlan : null
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-hover-bg text-xs text-primary">
@@ -90,37 +61,24 @@ export function Subscribe() {
           </ariaComponents.Text.Heading>
         </div>
 
-        <div className="w-full rounded-default bg-selected-frame p-8">
-          <div className="flex gap-6 overflow-auto scroll-hidden">
-            {backendModule.PLANS.map(newPlan => {
-              const planProps = componentForPlan.getComponentPerPlan(newPlan, getText)
+        <paymentModule.PlanSelector
+          plan={chosenPlan}
+          onSubscribeSuccess={plan => {
+            navigate({ pathname: appUtils.SUBSCRIBE_SUCCESS_PATH, search: `plan=${plan}` })
+          }}
+        />
 
-              return (
-                <components.Card
-                  key={newPlan}
-                  className="min-w-64 flex-1"
-                  features={planProps.features}
-                  subtitle={planProps.subtitle}
-                  title={planProps.title}
-                  submitButton={
-                    <planProps.submitButton
-                      onSubmit={async paymentMethodId => {
-                        await onCompleteMutation.mutateAsync({
-                          plan: newPlan,
-                          paymentMethodId,
-                        })
-                      }}
-                      plan={newPlan}
-                      defaultOpen={newPlan === plan}
-                    />
-                  }
-                  learnMore={<planProps.learnMore />}
-                  pricing={planProps.pricing}
-                />
-              )
-            })}
-          </div>
-        </div>
+        {user.plan != null ? (
+          <ariaComponents.Text variant="body" className="mt-24 self-center">
+            {getText('downgradeInfo')}{' '}
+            <ariaComponents.Button
+              variant="link"
+              href={appUtils.getSalesEmail() + `?subject=Downgrade%20our%20${user.plan}%20plan`}
+            >
+              {getText('contactSales')}
+            </ariaComponents.Button>
+          </ariaComponents.Text>
+        ) : null}
       </div>
     </div>
   )

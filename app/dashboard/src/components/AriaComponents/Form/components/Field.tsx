@@ -23,9 +23,10 @@ export interface FieldComponentProps
   readonly name: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly form?: types.FormInstance<any, any, any>
-  readonly isInvalid?: boolean
+  readonly isInvalid?: boolean | undefined
   readonly className?: string | undefined
   readonly children?: React.ReactNode | ((props: FieldChildrenRenderProps) => React.ReactNode)
+  readonly style?: React.CSSProperties | undefined
 }
 
 /**

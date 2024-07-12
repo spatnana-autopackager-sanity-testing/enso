@@ -412,6 +412,7 @@ export interface CognitoCredentials {
 
 /** Subscription plans. */
 export enum Plan {
+    free = 'free',
     solo = 'solo',
     team = 'team',
     enterprise = 'enterprise',
@@ -436,7 +437,7 @@ export interface CheckoutSessionStatus {
     /** Status of the payment for the checkout session. */
     readonly paymentStatus: string
     /** Status of the checkout session. */
-    readonly status: string
+    readonly status: 'active' | 'trialing' | (string & {})
 }
 
 /** Resource usage of a VM. */

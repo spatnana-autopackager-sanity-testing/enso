@@ -14,6 +14,7 @@ export const LOGIN_PATH = '/login'
 export const REGISTRATION_PATH = '/registration'
 /** Path to the confirm registration page. */
 export const CONFIRM_REGISTRATION_PATH = '/confirmation'
+export const SET_UP = '/setup'
 /** Path to the page in which a user can restore their account after it has been
  * marked for deletion. */
 export const RESTORE_USER_PATH = '/restore-user'
@@ -31,7 +32,7 @@ export const SUBSCRIBE_SUCCESS_PATH = '/subscribe/success'
 export const ALL_PATHS_REGEX = new RegExp(
   `(?:${DASHBOARD_PATH}|${LOGIN_PATH}|${REGISTRATION_PATH}|${CONFIRM_REGISTRATION_PATH}|` +
     `${FORGOT_PASSWORD_PATH}|${RESET_PASSWORD_PATH}|${SET_USERNAME_PATH}|${RESTORE_USER_PATH}|` +
-    `${SUBSCRIBE_PATH}|${SUBSCRIBE_SUCCESS_PATH})$`
+    `${SUBSCRIBE_PATH}|${SUBSCRIBE_SUCCESS_PATH}|${SET_UP})$`
 )
 
 // === Constants related to URLs ===
@@ -43,6 +44,13 @@ export const SEARCH_PARAMS_PREFIX = 'cloud-ide_'
  */
 export function getUpgradeURL(plan: string): string {
   return SUBSCRIBE_PATH + '?plan=' + plan
+}
+
+/**
+ * Return the mailto URL for contacting sales.
+ */
+export function getSalesEmail(): string {
+  return 'mailto:contact@enso.org'
 }
 
 /**

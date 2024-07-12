@@ -10,10 +10,10 @@ import * as ariaComponents from '#/components/AriaComponents'
 import * as mergeRefs from '#/utilities/mergeRefs'
 import * as twv from '#/utilities/tailwindVariants'
 
-import * as varants from './variants'
+import * as variants from '../variants'
 
 const CONTENT_EDITABLE_STYLES = twv.tv({
-  extend: varants.INPUT_STYLES,
+  extend: variants.INPUT_STYLES,
   base: '',
   slots: { placeholder: 'opacity-50 absolute inset-0 pointer-events-none' },
 })
@@ -25,7 +25,6 @@ export interface ResizableContentEditableInputProps<
   Schema extends ariaComponents.TSchema,
   TFieldValues extends ariaComponents.FieldValues<Schema>,
   TFieldName extends ariaComponents.FieldPath<Schema, TFieldValues>,
-  // eslint-disable-next-line no-restricted-syntax
   TTransformedValues extends ariaComponents.FieldValues<Schema> | undefined = undefined,
 > extends ariaComponents.FieldStateProps<
       Omit<

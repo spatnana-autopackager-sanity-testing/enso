@@ -33,6 +33,7 @@ export const TEXT_STYLE = twv.tv({
       disabled: 'text-primary/30',
       invert: 'text-white',
       inherit: 'text-inherit',
+      current: 'text-current',
     },
     font: {
       default: '',
@@ -91,7 +92,7 @@ export const TEXT_STYLE = twv.tv({
     disableLineHeightCompensation: {
       true: 'before:hidden after:hidden before:w-0 after:w-0',
       false:
-        'inline-block flex-col before:block after:block before:flex-none after:flex-none before:w-full after:w-full',
+        'flex-col before:block after:block before:flex-none after:flex-none before:w-full after:w-full',
     },
   },
   defaultVariants: {

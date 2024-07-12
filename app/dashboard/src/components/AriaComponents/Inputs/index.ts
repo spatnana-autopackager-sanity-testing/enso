@@ -5,3 +5,4 @@
  */
 
 export * from './ResizableInput'
+export * from './Input'

@@ -2,6 +2,8 @@
  * Can be used to display alerts, confirmations, or other content. */
 import * as React from 'react'
 
+import * as framerMotion from 'framer-motion'
+
 import * as aria from '#/components/aria'
 import * as ariaComponents from '#/components/AriaComponents'
 import * as errorBoundary from '#/components/ErrorBoundary'

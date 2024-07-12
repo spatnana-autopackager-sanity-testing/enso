@@ -7,8 +7,6 @@ import type * as React from 'react'
 import type * as reactHookForm from 'react-hook-form'
 import type * as z from 'zod'
 
-import type * as aria from '#/components/aria'
-
 import type * as schemaModule from './schema'
 
 /**
@@ -93,9 +91,34 @@ export interface FormWithValueValidation<
 /**
  * Props for the Field component.
  */
-export interface FieldProps extends aria.AriaLabelingProps {
-  readonly isRequired?: boolean
-  readonly label?: React.ReactNode
-  readonly description?: React.ReactNode
-  readonly error?: React.ReactNode
+// Readonly omitted here to avoid type mismatch with native HTML attributes
+// eslint-disable-next-line no-restricted-syntax
+export interface FieldProps {
+  readonly isRequired?: boolean | undefined
+  readonly label?: React.ReactNode | undefined
+  readonly description?: React.ReactNode | undefined
+  readonly error?: React.ReactNode | undefined
+  /**
+   * Defines a string value that labels the current element.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'aria-label'?: string | undefined
+
+  /**
+   * Identifies the element (or elements) that labels the current element.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'aria-labelledby'?: string | undefined
+
+  /**
+   * Identifies the element (or elements) that describes the object.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'aria-describedby'?: string | undefined
+
+  /**
+   * Identifies the element (or elements) that provide a detailed, extended description for the object.
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'aria-details'?: string | undefined
 }

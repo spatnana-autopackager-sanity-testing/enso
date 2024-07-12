@@ -67,6 +67,7 @@ export interface BaseButtonProps<Render>
   /** Defaults to `full`. When `full`, the entire button will be replaced with the loader.
    * When `icon`, only the icon will be replaced with the loader. */
   readonly loaderPosition?: 'full' | 'icon'
+  readonly styles?: typeof BUTTON_STYLES
 }
 
 export const BUTTON_STYLES = twv.tv({
@@ -251,7 +252,7 @@ export const BUTTON_STYLES = twv.tv({
     isActive: 'none',
     loading: false,
     fullWidth: false,
-    size: 'xsmall',
+    size: 'medium',
     rounded: 'full',
     variant: 'primary',
     iconPosition: 'start',

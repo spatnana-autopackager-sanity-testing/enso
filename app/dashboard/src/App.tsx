@@ -65,6 +65,7 @@ import Login from '#/pages/authentication/Login'
 import Registration from '#/pages/authentication/Registration'
 import ResetPassword from '#/pages/authentication/ResetPassword'
 import RestoreAccount from '#/pages/authentication/RestoreAccount'
+import * as setup from '#/pages/authentication/Setup'
 import SetUsername from '#/pages/authentication/SetUsername'
 import Dashboard from '#/pages/dashboard/Dashboard'
 import * as subscribe from '#/pages/subscribe/Subscribe'
@@ -490,6 +491,8 @@ function AppRouter(props: AppRouterProps) {
           </router.Route>
         </router.Route>
       </router.Route>
+
+      <router.Route path={appUtils.SET_UP} element={<setup.Setup />} />
 
       {/* Other pages are visible to unauthenticated and authenticated users. */}
       <router.Route path={appUtils.CONFIRM_REGISTRATION_PATH} element={<ConfirmRegistration />} />

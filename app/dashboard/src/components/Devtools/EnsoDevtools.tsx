@@ -121,7 +121,7 @@ export function EnsoDevtools(props: EnsoDevtoolsProps) {
                       })
                     }}
                   >
-                    <ariaComponents.Radio label={getText('free')} value="free" />
+                    <ariaComponents.Radio label={getText('free')} value={'free'} />
                     <ariaComponents.Radio label={getText('solo')} value={backend.Plan.solo} />
                     <ariaComponents.Radio label={getText('team')} value={backend.Plan.team} />
                     <ariaComponents.Radio
@@ -131,6 +131,7 @@ export function EnsoDevtools(props: EnsoDevtoolsProps) {
                   </ariaComponents.RadioGroup>
 
                   <ariaComponents.Button
+                    size="small"
                     variant="outline"
                     onPress={() =>
                       queryClient.invalidateQueries({ queryKey: authQueryKey }).then(() => {
@@ -155,6 +156,7 @@ export function EnsoDevtools(props: EnsoDevtoolsProps) {
                 // eslint-disable-next-line no-restricted-syntax
                 const featureName = feature as billing.PaywallFeatureName
                 const { label, descriptionTextId } = getFeature(featureName)
+
                 return (
                   <div key={feature} className="flex flex-col">
                     <aria.Switch
