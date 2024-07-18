@@ -195,7 +195,7 @@ export const BUTTON_STYLES = twv.tv({
       delete:
         'bg-danger/80 hover:bg-danger text-white focus-visible:outline-danger focus-visible:bg-danger',
       icon: {
-        base: 'opacity-80 hover:opacity-100 focus-visible:opacity-100',
+        base: 'text-primary opacity-80 hover:opacity-100 focus-visible:opacity-100',
         wrapper: 'w-full h-full',
         content: 'w-full h-full',
         extraClickZone: 'w-full h-full',

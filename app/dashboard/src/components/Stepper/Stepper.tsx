@@ -7,7 +7,7 @@ import * as React from 'react'
 
 import * as tvw from 'tailwind-variants'
 
-import DoneIcon from 'enso-assets/check_mark.svg'
+import DoneIcon from '#/assets/check_mark.svg'
 
 import * as eventCallback from '#/hooks/eventCallbackHooks'
 

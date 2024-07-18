@@ -40,11 +40,12 @@ export function Subscribe() {
   const chosenPlan = backendModule.isPlan(maybePlan) ? maybePlan : null
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-hover-bg text-xs text-primary">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-hover-bg">
       <div className="mx-auto mt-16 flex w-full min-w-96 max-w-[1400px] flex-col items-start justify-center p-12">
         <div className="flex flex-col items-start">
           <ariaComponents.Button
             variant="icon"
+            size="medium"
             icon={Back}
             href={appUtils.DASHBOARD_PATH}
             className="-ml-2"
@@ -63,6 +64,7 @@ export function Subscribe() {
 
         <paymentModule.PlanSelector
           plan={chosenPlan}
+          userPlan={user.plan}
           onSubscribeSuccess={plan => {
             navigate({ pathname: appUtils.SUBSCRIBE_SUCCESS_PATH, search: `plan=${plan}` })
           }}

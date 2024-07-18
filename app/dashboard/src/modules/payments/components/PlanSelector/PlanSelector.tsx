@@ -2,6 +2,8 @@ import * as React from 'react'
 
 import * as reactQuery from '@tanstack/react-query'
 
+import { usePaywall } from '#/hooks/billing'
+
 import * as backendProvider from '#/providers/BackendProvider'
 import * as textProvider from '#/providers/TextProvider'
 
@@ -22,6 +24,7 @@ interface CreateCheckoutSessionMutation {
  *
  */
 export interface PlanSelectorProps {
+  readonly userPlan?: backendModule.Plan | undefined
   readonly plan?: backendModule.Plan | null | undefined
   readonly onSubscribeSuccess?: (plan: backendModule.Plan, paymentMethodId: string) => void
   readonly onSubscribeError?: (error: Error) => void
@@ -31,10 +34,11 @@ export interface PlanSelectorProps {
  *
  */
 export function PlanSelector(props: PlanSelectorProps) {
-  const { onSubscribeSuccess, onSubscribeError, plan } = props
+  const { onSubscribeSuccess, onSubscribeError, plan, userPlan } = props
   const { getText } = textProvider.useText()
 
   const backend = backendProvider.useRemoteBackendStrict()
+  const { getPaywallLevel } = usePaywall({ plan: userPlan })
 
   const onCompleteMutation = reactQuery.useMutation({
     mutationFn: async (mutationData: CreateCheckoutSessionMutation) => {
@@ -58,27 +62,31 @@ export function PlanSelector(props: PlanSelectorProps) {
   })
 
   return (
-    <div className="w-full rounded-default bg-selected-frame p-8">
-      <div className="flex gap-6 overflow-auto scroll-hidden">
+    <div className="w-full overflow-auto rounded-4xl bg-selected-frame p-6 scroll-hidden">
+      <div className="flex gap-6">
         {backendModule.PLANS.map(newPlan => {
+          const paywallLevel = getPaywallLevel(newPlan)
+          const userPaywallLevel = getPaywallLevel(userPlan)
           const planProps = componentForPlan.getComponentPerPlan(newPlan, getText)
 
           return (
             <components.Card
               key={newPlan}
-              className="min-w-64 flex-1"
+              className="min-w-72 flex-1"
               features={planProps.features}
               subtitle={planProps.subtitle}
               title={planProps.title}
+              elevated={planProps.elevated === true ? 'xxlarge' : 'none'}
+              highlighted={planProps.elevated}
               submitButton={
                 <planProps.submitButton
                   onSubmit={async paymentMethodId => {
-                    await onCompleteMutation.mutateAsync({
-                      plan: newPlan,
-                      paymentMethodId,
-                    })
+                    await onCompleteMutation.mutateAsync({ plan: newPlan, paymentMethodId })
                   }}
                   plan={newPlan}
+                  userHasSubscription={userPlan != null && userPlan !== backendModule.Plan.free}
+                  isCurrent={newPlan === userPlan}
+                  isDowngrade={userPaywallLevel > paywallLevel}
                   defaultOpen={newPlan === plan}
                 />
               }
