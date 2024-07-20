@@ -27,16 +27,14 @@ export interface ResizableContentEditableInputProps<
   TFieldName extends ariaComponents.FieldPath<Schema, TFieldValues>,
   TTransformedValues extends ariaComponents.FieldValues<Schema> | undefined = undefined,
 > extends ariaComponents.FieldStateProps<
-      Omit<
-        React.HTMLAttributes<HTMLDivElement> & { value: string },
-        'aria-describedby' | 'aria-details' | 'aria-label' | 'aria-labelledby'
-      >,
+      React.HTMLAttributes<HTMLDivElement> & { value: string },
       Schema,
       TFieldValues,
       TFieldName,
       TTransformedValues
     >,
-    ariaComponents.FieldProps {
+    ariaComponents.FieldProps,
+    Omit<twv.VariantProps<typeof variants.INPUT_STYLES>, 'disabled' | 'invalid'> {
   /**
    * onChange is called when the content of the input changes.
    * There is no way to prevent the change, so the value is always the new value.
@@ -70,6 +68,8 @@ export const ResizableContentEditableInput = React.forwardRef(
       isDisabled = false,
       form,
       defaultValue,
+      size,
+      rounded,
       ...textFieldProps
     } = props
 
@@ -102,7 +102,12 @@ export const ResizableContentEditableInput = React.forwardRef(
       inputContainer,
       textArea,
       placeholder: placeholderClass,
-    } = CONTENT_EDITABLE_STYLES({ isInvalid: fieldState.invalid })
+    } = CONTENT_EDITABLE_STYLES({
+      invalid: fieldState.invalid,
+      disabled: isDisabled || formInstance.formState.isSubmitting,
+      rounded,
+      size,
+    })
 
     return (
       <ariaComponents.Form.Field form={formInstance} name={name} fullWidth {...textFieldProps}>

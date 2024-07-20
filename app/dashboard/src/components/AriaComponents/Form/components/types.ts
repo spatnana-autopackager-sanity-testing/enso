@@ -46,11 +46,11 @@ export interface UseFormProps<Schema extends TSchema, TFieldValues extends Field
  * Return type of the useForm hook.
  * @alias reactHookForm.UseFormReturn
  */
-export type UseFormReturn<
+export interface UseFormReturn<
   Schema extends TSchema,
   TFieldValues extends FieldValues<Schema>,
   TTransformedValues extends Record<string, unknown> | undefined = undefined,
-> = reactHookForm.UseFormReturn<TFieldValues, unknown, TTransformedValues>
+> extends reactHookForm.UseFormReturn<TFieldValues, unknown, TTransformedValues> {}
 
 /**
  * Form state type.
@@ -67,7 +67,7 @@ export type FormState<
  */
 export type FormInstance<
   Schema extends TSchema,
-  TFieldValues extends FieldValues<Schema>,
+  TFieldValues extends FieldValues<Schema> = FieldValues<Schema>,
   TTransformedValues extends Record<string, unknown> | undefined = undefined,
 > = UseFormReturn<Schema, TFieldValues, TTransformedValues>
 

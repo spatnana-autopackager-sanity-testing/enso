@@ -2,8 +2,6 @@
  * Can be used to display alerts, confirmations, or other content. */
 import * as React from 'react'
 
-import * as framerMotion from 'framer-motion'
-
 import * as aria from '#/components/aria'
 import * as ariaComponents from '#/components/AriaComponents'
 import * as errorBoundary from '#/components/ErrorBoundary'
@@ -47,11 +45,11 @@ const MODAL_STYLES = twv.tv({
 
 const DIALOG_STYLES = twv.tv({
   extend: variants.DIALOG_STYLES,
-  base: '',
+  base: 'w-full',
   variants: {
     type: {
       modal: {
-        base: 'w-full max-w-md min-h-[100px] max-h-[90vh]',
+        base: 'w-full min-h-[100px] max-h-[90vh]',
         header: 'px-3.5 pt-[3px] pb-0.5 min-h-[42px]',
       },
       fullscreen: {
@@ -65,9 +63,22 @@ const DIALOG_STYLES = twv.tv({
       floating: {
         base: '',
         closeButton: 'absolute left-4 top-4 visible z-1 transition-all duration-150',
-        header: 'invisible p-0 h-0 border-0 z-1',
+        header: 'p-0 max-h-0 min-h-0 h-0 border-0 z-1',
         content: 'isolate',
       },
+    },
+    /**
+     * The size of the dialog.
+     * Only applies to the `modal` type.
+     */
+    size: {
+      small: { base: '' },
+      medium: { base: '' },
+      large: { base: '' },
+      xlarge: { base: '' },
+      xxlarge: { base: '' },
+      xxxlarge: { base: '' },
+      xxxxlarge: { base: '' },
     },
     scrolledToTop: { true: { header: 'border-transparent' } },
   },
@@ -77,6 +88,21 @@ const DIALOG_STYLES = twv.tv({
     closeButton: 'col-start-1 col-end-1 mr-auto',
     heading: 'col-start-2 col-end-2 my-0 text-center',
     content: 'relative flex-auto overflow-y-auto p-3.5',
+  },
+  compoundVariants: [
+    { type: 'modal', size: 'small', class: 'max-w-sm' },
+    { type: 'modal', size: 'medium', class: 'max-w-md' },
+    { type: 'modal', size: 'large', class: 'max-w-lg' },
+    { type: 'modal', size: 'xlarge', class: 'max-w-xl' },
+    { type: 'modal', size: 'xxlarge', class: 'max-w-2xl' },
+    { type: 'modal', size: 'xxxlarge', class: 'max-w-3xl' },
+    { type: 'modal', size: 'xxxxlarge', class: 'max-w-4xl' },
+  ],
+  defaultVariants: {
+    type: 'modal',
+    closeButton: 'normal',
+    hideCloseButton: false,
+    size: 'medium',
   },
 })
 
@@ -99,6 +125,7 @@ export function Dialog(props: DialogProps) {
     onOpenChange = () => {},
     modalProps = {},
     testId = 'dialog',
+    size,
     rounded,
     ...ariaDialogProps
   } = props
@@ -128,6 +155,7 @@ export function Dialog(props: DialogProps) {
     hideCloseButton,
     closeButton,
     scrolledToTop: isScrolledToTop,
+    size,
   })
 
   utlities.useInteractOutside({

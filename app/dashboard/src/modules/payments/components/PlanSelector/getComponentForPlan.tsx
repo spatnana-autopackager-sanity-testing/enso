@@ -18,7 +18,7 @@ import * as ariaComponents from '#/components/AriaComponents'
 import * as backendModule from '#/services/Backend'
 
 import * as constants from '../../constants'
-import AddPaymentMethodModal from '../AddPaymentMethodModal'
+import { PlanSelectorDialog } from './components'
 
 /**
  * The props for the submit button.
@@ -31,6 +31,7 @@ interface SubmitButtonProps {
   readonly isDowngrade?: boolean
   readonly defaultOpen?: boolean
   readonly isDisabled?: boolean
+  readonly features: string[]
 }
 
 /**
@@ -131,6 +132,7 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
         isCurrent = false,
         isDisabled = false,
         userHasSubscription = false,
+        features,
       } = props
 
       const { getText } = textProvider.useText()
@@ -161,10 +163,12 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
             {buttonText}
           </ariaComponents.Button>
 
-          <AddPaymentMethodModal
+          <PlanSelectorDialog
             title={getText('upgradeTo', getText(plan))}
             onSubmit={onSubmit}
-            submitText={getText('subscribeSubmit')}
+            planName={getText(plan)}
+            features={features}
+            plan={plan}
           />
         </ariaComponents.DialogTrigger>
       )
@@ -204,7 +208,9 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
         isCurrent = false,
         userHasSubscription = false,
         isDisabled = false,
+        features,
       } = props
+
       const { getText } = textProvider.useText()
 
       const disabled = isCurrent || isDowngrade || isDisabled
@@ -233,10 +239,12 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
             {buttonText}
           </ariaComponents.Button>
 
-          <AddPaymentMethodModal
+          <PlanSelectorDialog
             title={getText('upgradeTo', getText(plan))}
             onSubmit={onSubmit}
-            submitText={getText('subscribeSubmit')}
+            planName={getText(plan)}
+            features={features}
+            plan={plan}
           />
         </ariaComponents.DialogTrigger>
       )

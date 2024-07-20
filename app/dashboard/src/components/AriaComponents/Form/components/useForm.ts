@@ -28,7 +28,7 @@ import type * as types from './types'
  */
 export function useForm<
   Schema extends types.TSchema,
-  TFieldValues extends types.FieldValues<Schema>,
+  TFieldValues extends types.FieldValues<Schema> = types.FieldValues<Schema>,
   // eslint-disable-next-line no-restricted-syntax
   TTransformedValues extends types.FieldValues<Schema> | undefined = undefined,
 >(

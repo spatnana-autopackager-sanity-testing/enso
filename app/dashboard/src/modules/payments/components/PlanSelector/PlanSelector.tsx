@@ -24,6 +24,8 @@ interface CreateCheckoutSessionMutation {
  *
  */
 export interface PlanSelectorProps {
+  readonly showFreePlan?: boolean
+  readonly hasTrial?: boolean
   readonly userPlan?: backendModule.Plan | undefined
   readonly plan?: backendModule.Plan | null | undefined
   readonly onSubscribeSuccess?: (plan: backendModule.Plan, paymentMethodId: string) => void
@@ -31,10 +33,10 @@ export interface PlanSelectorProps {
 }
 
 /**
- *
+ * Plan selector
  */
 export function PlanSelector(props: PlanSelectorProps) {
-  const { onSubscribeSuccess, onSubscribeError, plan, userPlan } = props
+  const { onSubscribeSuccess, onSubscribeError, plan, userPlan, showFreePlan = true } = props
   const { getText } = textProvider.useText()
 
   const backend = backendProvider.useRemoteBackendStrict()
@@ -46,6 +48,7 @@ export function PlanSelector(props: PlanSelectorProps) {
         plan: mutationData.plan,
         paymentMethodId: mutationData.paymentMethodId,
       })
+
       return backend.getCheckoutSession(id).then(data => {
         if (['trialing', 'active'].includes(data.status)) {
           return data
@@ -62,38 +65,46 @@ export function PlanSelector(props: PlanSelectorProps) {
   })
 
   return (
-    <div className="w-full overflow-auto rounded-4xl bg-selected-frame p-6 scroll-hidden">
-      <div className="flex gap-6">
+    <div className="w-full overflow-auto rounded-4xl bg-selected-frame scroll-hidden">
+      <div className="inline-flex min-w-full gap-6 p-6">
         {backendModule.PLANS.map(newPlan => {
           const paywallLevel = getPaywallLevel(newPlan)
           const userPaywallLevel = getPaywallLevel(userPlan)
           const planProps = componentForPlan.getComponentPerPlan(newPlan, getText)
 
-          return (
-            <components.Card
-              key={newPlan}
-              className="min-w-72 flex-1"
-              features={planProps.features}
-              subtitle={planProps.subtitle}
-              title={planProps.title}
-              elevated={planProps.elevated === true ? 'xxlarge' : 'none'}
-              highlighted={planProps.elevated}
-              submitButton={
-                <planProps.submitButton
-                  onSubmit={async paymentMethodId => {
-                    await onCompleteMutation.mutateAsync({ plan: newPlan, paymentMethodId })
-                  }}
-                  plan={newPlan}
-                  userHasSubscription={userPlan != null && userPlan !== backendModule.Plan.free}
-                  isCurrent={newPlan === userPlan}
-                  isDowngrade={userPaywallLevel > paywallLevel}
-                  defaultOpen={newPlan === plan}
-                />
-              }
-              learnMore={<planProps.learnMore />}
-              pricing={planProps.pricing}
-            />
-          )
+          if (showFreePlan || newPlan !== backendModule.Plan.free) {
+            const isCurrentPlan =
+              newPlan === userPlan ||
+              (newPlan === backendModule.Plan.free && userPlan === undefined)
+
+            return (
+              <components.Card
+                key={newPlan}
+                className="min-w-72 flex-1"
+                features={planProps.features}
+                subtitle={planProps.subtitle}
+                title={planProps.title}
+                elevated={planProps.elevated === true ? 'xxlarge' : 'none'}
+                submitButton={
+                  <planProps.submitButton
+                    onSubmit={async paymentMethodId => {
+                      await onCompleteMutation.mutateAsync({ plan: newPlan, paymentMethodId })
+                    }}
+                    plan={newPlan}
+                    userHasSubscription={userPlan != null && userPlan !== backendModule.Plan.free}
+                    isCurrent={isCurrentPlan}
+                    isDowngrade={userPaywallLevel > paywallLevel}
+                    defaultOpen={newPlan === plan}
+                    features={planProps.features}
+                  />
+                }
+                learnMore={<planProps.learnMore />}
+                pricing={planProps.pricing}
+              />
+            )
+          } else {
+            return null
+          }
         })}
       </div>
     </div>

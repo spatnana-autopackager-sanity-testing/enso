@@ -39,7 +39,7 @@ export interface CardProps extends React.PropsWithChildren, twv.VariantProps<typ
 }
 
 export const CARD_STYLES = twv.tv({
-  base: 'flex flex-col border-0.5 border-primary/30',
+  base: 'flex flex-col border-0.5',
   variants: {
     elevated: {
       none: '',
@@ -52,7 +52,8 @@ export const CARD_STYLES = twv.tv({
       xxxlarge: 'shadow-primary/15 shadow-3xl',
     },
     highlighted: {
-      true: 'border-primary',
+      true: 'outline outline-1.5 -outline-offset-1 outline-primary',
+      false: 'border-primary/30',
     },
     rounded: {
       none: '',
@@ -94,11 +95,12 @@ export function Card(props: CardProps) {
     className,
     elevated,
     rounded,
+    highlighted,
   } = props
 
   const { getText } = textProvider.useText()
 
-  const classes = CARD_STYLES({ elevated, rounded })
+  const classes = CARD_STYLES({ elevated, rounded, highlighted })
 
   return (
     <div className={classes.base({ className })}>

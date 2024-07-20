@@ -93,6 +93,8 @@ export const TEXT_STYLE = twv.tv({
       true: 'before:hidden after:hidden before:w-0 after:w-0',
       false:
         'flex-col before:block after:block before:flex-none after:flex-none before:w-full after:w-full',
+      top: 'flex-col before:hidden before:w-0 after:block after:flex-none after:w-full',
+      bottom: 'flex-col before:block before:flex-none before:w-full after:hidden after:w-0',
     },
   },
   defaultVariants: {

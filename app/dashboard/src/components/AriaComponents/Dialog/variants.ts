@@ -23,6 +23,7 @@ export const DIALOG_STYLES = twv.tv({
       xlarge: 'rounded-xl',
       xxlarge: 'rounded-2xl',
       xxxlarge: 'rounded-3xl',
+      xxxxlarge: 'rounded-4xl',
     },
   },
   defaultVariants: {

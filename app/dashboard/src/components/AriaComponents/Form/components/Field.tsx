@@ -48,7 +48,7 @@ export const FIELD_STYLES = twv.tv({
   },
   slots: {
     labelContainer: 'contents',
-    label: text.TEXT_STYLE({ variant: 'subtitle' }),
+    label: text.TEXT_STYLE({ variant: 'body', disableLineHeightCompensation: true }),
     content: 'flex flex-col items-start w-full',
     description: text.TEXT_STYLE({ variant: 'body', color: 'disabled' }),
     error: text.TEXT_STYLE({ variant: 'body', color: 'danger' }),

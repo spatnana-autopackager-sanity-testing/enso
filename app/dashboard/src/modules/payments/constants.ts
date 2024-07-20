@@ -14,3 +14,11 @@ export const PLAN_TO_TEXT_ID: Readonly<Record<backendModule.Plan, text.TextId>> 
   [backendModule.Plan.team]: 'teamPlanName',
   [backendModule.Plan.enterprise]: 'enterprisePlanName',
 } satisfies { [Plan in backendModule.Plan]: `${Plan}PlanName` }
+
+export const PRICE_CURRENCY = 'USD'
+export const PRICE_PER_PLAN: Readonly<Record<backendModule.Plan, number>> = {
+  [backendModule.Plan.free]: 0,
+  [backendModule.Plan.solo]: 60,
+  [backendModule.Plan.team]: 150,
+  [backendModule.Plan.enterprise]: 250,
+} satisfies { [Plan in backendModule.Plan]: number }
