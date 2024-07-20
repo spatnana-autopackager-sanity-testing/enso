@@ -90,6 +90,7 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
                 <div className="grid w-full grid-cols-1 items-center">
                   <Input
                     isDisabled={maxSeats === 1}
+                    isRequired
                     form={form}
                     name="seats"
                     type="number"

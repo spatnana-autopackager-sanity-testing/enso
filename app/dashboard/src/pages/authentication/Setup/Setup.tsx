@@ -4,6 +4,7 @@
  */
 import * as React from 'react'
 
+import { PlanSelector } from '#/modules/payments'
 import invariant from 'tiny-invariant'
 
 import type * as text from 'enso-common/src/text'
@@ -11,6 +12,7 @@ import type * as text from 'enso-common/src/text'
 import * as textProvider from '#/providers/TextProvider'
 
 import * as ariaComponents from '#/components/AriaComponents'
+import Page from '#/components/Page'
 import * as stepper from '#/components/Stepper'
 
 import AuthenticationPage from '../AuthenticationPage'
@@ -34,7 +36,7 @@ const BASE_STEPS: Step[] = [
       return (
         <>
           <ariaComponents.Text>{getText('choosePlan')}</ariaComponents.Text>
-          <ariaComponents.PlanSelector />
+          <PlanSelector />
         </>
       )
     },
@@ -84,8 +86,9 @@ export function Setup() {
   invariant(currentScreen != null, 'Current screen not found')
 
   return (
-    <AuthenticationPage title={getText('setupEnso')} isNotForm>
+    <Page title={getText('setupEnso')}>
       <stepper.Stepper
+        className="mx-auto mt-24 max-w-screen-xl"
         state={stepperState}
         renderStep={stepProps => {
           const step = steps[stepProps.index]
@@ -129,6 +132,6 @@ export function Setup() {
           </ariaComponents.Form>
         )}
       </stepper.Stepper>
-    </AuthenticationPage>
+    </Page>
   )
 }

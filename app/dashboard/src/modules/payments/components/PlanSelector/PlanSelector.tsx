@@ -7,6 +7,8 @@ import { usePaywall } from '#/hooks/billing'
 import * as backendProvider from '#/providers/BackendProvider'
 import * as textProvider from '#/providers/TextProvider'
 
+import { DIALOG_BACKGROUND } from '#/components/AriaComponents'
+
 import * as backendModule from '#/services/Backend'
 
 import * as components from './components'
@@ -65,7 +67,9 @@ export function PlanSelector(props: PlanSelectorProps) {
   })
 
   return (
-    <div className="w-full overflow-auto rounded-4xl bg-selected-frame scroll-hidden">
+    <div
+      className={DIALOG_BACKGROUND({ className: 'w-full overflow-auto rounded-4xl scroll-hidden' })}
+    >
       <div className="inline-flex min-w-full gap-6 p-6">
         {backendModule.PLANS.map(newPlan => {
           const paywallLevel = getPaywallLevel(newPlan)

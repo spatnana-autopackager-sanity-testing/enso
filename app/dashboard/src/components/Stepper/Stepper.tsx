@@ -80,7 +80,7 @@ const STEPPER_STYLES = tvw.tv({
   base: 'flex flex-col items-center w-full',
   slots: {
     steps: 'flex items-center justify-between w-full',
-    step: 'flex-1',
+    step: 'flex-1 last:flex-none',
     content: 'w-full mt-4',
   },
 })
@@ -110,10 +110,7 @@ export function Stepper(props: StepperProps) {
     totalSteps,
   } satisfies BaseRenderProps
 
-  const classes = STEPPER_STYLES({
-    className:
-      typeof props.className === 'function' ? props.className(baseRenderProps) : props.className,
-  })
+  const classes = STEPPER_STYLES({})
 
   const style = typeof props.style === 'function' ? props.style(baseRenderProps) : props.style
 
@@ -135,7 +132,15 @@ export function Stepper(props: StepperProps) {
   }
 
   return (
-    <div className={classes.base()} style={style}>
+    <div
+      className={classes.base({
+        className:
+          typeof props.className === 'function'
+            ? props.className(baseRenderProps)
+            : props.className,
+      })}
+      style={style}
+    >
       <stepperProvider.StepperProvider
         value={{ totalSteps, currentStep, goToStep, nextStep, previousStep }}
       >
