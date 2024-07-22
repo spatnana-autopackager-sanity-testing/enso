@@ -18,7 +18,7 @@ import * as stepper from '#/components/Stepper'
 import { Plan } from '#/services/Backend'
 
 /**
- *
+ * Step in the setup process
  */
 interface Step {
   readonly title: text.TextId
@@ -30,7 +30,7 @@ interface Step {
 }
 
 /**
- *
+ * Context for the setup process
  */
 interface Context {
   readonly plan: Plan | undefined
