@@ -39,7 +39,7 @@ export const INPUT_STYLES = twv.tv({
     },
     variant: {
       outline: {
-        base: 'border-[0.5px] outline-offset-2 border-primary/10 focus-within:outline focus-within:outline-2 focus-within:outline-offset-[-1px] focus-within:outline-primary focus-within:border-primary/50',
+        base: 'border-[0.5px] outline-offset-2 border-primary/20 focus-within:outline focus-within:outline-2 focus-within:outline-offset-[-1px] focus-within:outline-primary focus-within:border-primary/50',
         textArea: 'border-transparent focus-within:border-transparent',
       },
     },
