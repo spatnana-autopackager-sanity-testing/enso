@@ -69,18 +69,6 @@ export function Subscribe() {
             navigate({ pathname: appUtils.SUBSCRIBE_SUCCESS_PATH, search: `plan=${plan}` })
           }}
         />
-
-        {user.plan != null ? (
-          <ariaComponents.Text variant="body" className="mt-24 self-center">
-            {getText('downgradeInfo')}{' '}
-            <ariaComponents.Button
-              variant="link"
-              href={appUtils.getSalesEmail() + `?subject=Downgrade%20our%20${user.plan}%20plan`}
-            >
-              {getText('contactSales')}
-            </ariaComponents.Button>
-          </ariaComponents.Text>
-        ) : null}
       </div>
     </div>
   )

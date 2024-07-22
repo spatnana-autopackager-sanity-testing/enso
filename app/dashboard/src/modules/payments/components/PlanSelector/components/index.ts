@@ -6,3 +6,4 @@
 export * from './Card'
 export * from './PlanSelectorDialog'
 export * from './PlanFeatures'
+export * from './SubscribeButton'

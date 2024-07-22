@@ -468,7 +468,7 @@ export interface OrganizationInfo {
     readonly website: HttpsUrl | null
     readonly address: string | null
     readonly picture: HttpsUrl | null
-    readonly subscription: Subscription
+    readonly subscription: Subscription | null
 }
 
 /** A user group and its associated metadata. */

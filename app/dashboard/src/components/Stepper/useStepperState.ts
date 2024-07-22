@@ -15,7 +15,7 @@ import * as eventCallbackHooks from '#/hooks/eventCallbackHooks'
 export interface StepperStateProps {
   readonly defaultStep?: number
   readonly steps: number
-  readonly onStepChange?: (step: number) => void
+  readonly onStepChange?: (step: number, direction: 'back' | 'forward') => void
   readonly onCompleted?: () => void
 }
 
@@ -70,7 +70,7 @@ export function useStepperState(props: StepperStateProps): UseStepperStateResult
           onCompleted?.()
           return steps
         } else {
-          onStepChange?.(newStep)
+          onStepChange?.(newStep, newStep > current ? 'forward' : 'back')
           return newStep
         }
       })

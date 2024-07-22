@@ -124,6 +124,8 @@ interface PlaceholderOverrides {
     readonly priceTemplate: [price: string, interval: string]
     readonly months: [months: number]
     readonly teamPlanSeatsDescription: [seats: number]
+    readonly tryFree: [days: number]
+    readonly organizationNameSettingsInputDescription: [howLong: number]
 }
 
 /** An tuple of `string` for placeholders for each {@link TextId}. */

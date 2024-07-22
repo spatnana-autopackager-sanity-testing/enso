@@ -23,7 +23,7 @@ interface CreateCheckoutSessionMutation {
 }
 
 /**
- *
+ * Props for {@link PlanSelector}
  */
 export interface PlanSelectorProps {
   readonly showFreePlan?: boolean
@@ -38,9 +38,16 @@ export interface PlanSelectorProps {
  * Plan selector
  */
 export function PlanSelector(props: PlanSelectorProps) {
-  const { onSubscribeSuccess, onSubscribeError, plan, userPlan, showFreePlan = true } = props
-  const { getText } = textProvider.useText()
+  const {
+    onSubscribeSuccess,
+    onSubscribeError,
+    plan,
+    userPlan,
+    showFreePlan = true,
+    hasTrial = true,
+  } = props
 
+  const { getText } = textProvider.useText()
   const backend = backendProvider.useRemoteBackendStrict()
   const { getPaywallLevel } = usePaywall({ plan: userPlan })
 
@@ -68,7 +75,9 @@ export function PlanSelector(props: PlanSelectorProps) {
 
   return (
     <div
-      className={DIALOG_BACKGROUND({ className: 'w-full overflow-auto rounded-4xl scroll-hidden' })}
+      className={DIALOG_BACKGROUND({
+        className: 'w-full snap-x overflow-auto rounded-4xl scroll-hidden',
+      })}
     >
       <div className="inline-flex min-w-full gap-6 p-6">
         {backendModule.PLANS.map(newPlan => {
@@ -84,7 +93,7 @@ export function PlanSelector(props: PlanSelectorProps) {
             return (
               <components.Card
                 key={newPlan}
-                className="min-w-72 flex-1"
+                className="min-w-72 flex-1 snap-center"
                 features={planProps.features}
                 subtitle={planProps.subtitle}
                 title={planProps.title}
@@ -100,6 +109,7 @@ export function PlanSelector(props: PlanSelectorProps) {
                     isDowngrade={userPaywallLevel > paywallLevel}
                     defaultOpen={newPlan === plan}
                     features={planProps.features}
+                    canTrial={hasTrial}
                   />
                 }
                 learnMore={<planProps.learnMore />}

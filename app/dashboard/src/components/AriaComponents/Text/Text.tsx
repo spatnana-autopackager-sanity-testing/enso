@@ -62,9 +62,9 @@ export const TEXT_STYLE = twv.tv({
     },
     transform: {
       none: '',
-      capitalize: 'text-capitalize',
-      lowercase: 'text-lowercase',
-      uppercase: 'text-uppercase',
+      capitalize: 'capitalize',
+      lowercase: 'lowercase',
+      uppercase: 'uppercase',
     },
     truncate: {
       /* eslint-disable @typescript-eslint/naming-convention */
@@ -157,11 +157,13 @@ export const Text = React.forwardRef(function Text(
     balance,
     textSelection,
     disableLineHeightCompensation:
-      disableLineHeightCompensation || textContext.isInsideTextComponent,
+      disableLineHeightCompensation === false
+        ? textContext.isInsideTextComponent
+        : disableLineHeightCompensation,
     className,
   })
 
-  const isToolipDisabled = () => {
+  const isTooltipDisabled = () => {
     if (tooltipDisplay === 'whenOverflowing') {
       return !truncate
     } else if (tooltipDisplay === 'always') {
@@ -172,7 +174,7 @@ export const Text = React.forwardRef(function Text(
   }
 
   const { tooltip, targetProps } = visualTooltip.useVisualTooltip({
-    isDisabled: isToolipDisabled(),
+    isDisabled: isTooltipDisabled(),
     targetRef: textElementRef,
     display: tooltipDisplay,
     children: tooltipElement,

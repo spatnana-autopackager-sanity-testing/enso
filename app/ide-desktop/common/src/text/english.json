@@ -158,9 +158,13 @@
   "upgradeToUseCloud": "Upgrade your plan to use Enso Cloud.",
 
   "me": "Me",
+  "or": "or",
   "login": "Login",
   "register": "Register",
   "upgrade": "Upgrade",
+  "startTrial": "Start Trial",
+  "trialDescription": "Start a 14-day free trial",
+  "downgradeDescription": "Looking for downgrade options?",
   "settings": "Settings",
   "cloud": "Cloud",
   "local": "Local",
@@ -389,6 +393,7 @@
   "canOnlyEmptyTrashWhenInTrash": "Can only empty trash when in Trash",
   "upgradeTo": "Upgrade to $0",
   "choosePlan": "Choose a plan",
+  "choosePlanDescription": "Select a plan to continue using Enso, or try the free edition. You can always upgrade later.",
   "localAssetsDoNotHaveVersions": "Local assets do not have versions",
   "noVersionsFound": "No versions found",
   "latestIndicator": "(Latest)",
@@ -481,6 +486,7 @@
 
   "billedMonthly": "Billed monthly",
   "billedAnnually": "Billed annually",
+  "tryFree": "Try free for $0 days, then ",
   "priceTemplate": "$0 per user / month. $1",
   "freePlanName": "Free",
   "freePlanSubtitle": "Try Enso",
@@ -703,6 +709,7 @@
   "contactSales": "Contact Sales",
 
   "setOrgNameTitle": "Set your organization name",
+  "setOrgNameDescription": "Enter the name of your organization. You can always change it later.",
 
   "userContextMenuLabel": "User context menu",
   "userGroupContextMenuLabel": "User Group context menu",
@@ -723,6 +730,7 @@
   "organizationSettingsTab": "Organization",
   "organizationSettingsSection": "Organization",
   "organizationNameSettingsInput": "Organization display name",
+  "organizationNameSettingsInputDescription": "The name should not be longer that $0 characters",
   "organizationEmailSettingsInput": "Email",
   "organizationWebsiteSettingsInput": "Website",
   "organizationLocationSettingsInput": "Location",
@@ -789,5 +797,6 @@
   "termsAndConditions": "Terms and Conditions",
   "back": "Back",
   "next": "Next",
+  "skip": "Skip",
   "setUsernameDescription": "Finish setting up your account by setting your username."
 }

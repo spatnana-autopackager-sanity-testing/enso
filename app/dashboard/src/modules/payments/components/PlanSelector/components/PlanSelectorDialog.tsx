@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { useText } from '#/providers/TextProvider'
 
-import { Dialog, Form, Input, Text } from '#/components/AriaComponents'
+import { Dialog, Form, Input, Separator, Text } from '#/components/AriaComponents'
 import { ErrorDisplay } from '#/components/ErrorBoundary'
 import { Suspense } from '#/components/Suspense'
 
@@ -31,15 +31,18 @@ export interface PlanSelectorDialogProps {
   readonly planName: string
   readonly features: string[]
   readonly title: string
-  readonly onSubmit?: (paymentMethodId: PaymentMethod['id']) => Promise<void> | void
-  readonly priceAmount: number
+  readonly onSubmit?: ((paymentMethodId: PaymentMethod['id']) => Promise<void> | void) | undefined
+  /**
+   * Whether the user clicked on the trial button.
+   */
+  readonly isTrialing?: boolean
 }
 
 /**
  * Dialog that shows the plan details, price, and the payment form.
  */
 export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
-  const { title, onSubmit, planName, features, plan } = props
+  const { title, onSubmit, planName, features, plan, isTrialing = false } = props
   const { getText, locale } = useText()
   const price = PRICE_PER_PLAN[plan]
 
@@ -70,6 +73,7 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
         <Text.Heading
           level="2"
           variant="subtitle"
+          transform="uppercase"
           weight="medium"
           disableLineHeightCompensation
           className="-mt-0.5"
@@ -77,9 +81,22 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
           {title}
         </Text.Heading>
 
-        <Text variant="h1" weight="medium" disableLineHeightCompensation className="mb-4 block">
-          {getText('priceTemplate', formatter.format(price), getText('billedAnnually'))}
+        <Text variant="h1" weight="medium" disableLineHeightCompensation className="mb-2 block">
+          {isTrialing
+            ? getText('tryFree', 14) +
+              getText('priceTemplate', formatter.format(price), getText('billedAnnually'))
+            : getText('priceTemplate', formatter.format(price), getText('billedAnnually'))}
         </Text>
+
+        <div>
+          <Text.Heading level="3" variant="body" weight="semibold" className="mb-1">
+            {getText('upgradeCTA', planName)}
+          </Text.Heading>
+
+          <PlanFeatures features={features} />
+        </div>
+
+        <Separator orientation="horizontal" className="my-4" />
 
         <div className="grid grid-cols-[1fr]">
           <div className="flex flex-col gap-4">
@@ -102,14 +119,6 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
                   />
                 </div>
               </Form>
-            </div>
-
-            <div>
-              <Text.Heading level="3" variant="body" weight="semibold" className="mb-1">
-                {getText('upgradeCTA', planName)}
-              </Text.Heading>
-
-              <PlanFeatures features={features} />
             </div>
           </div>
 
@@ -145,7 +154,7 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
 }
 
 /**
- *
+ * Props for {@link Summary}.
  */
 interface SummaryProps {
   readonly plan: Plan
@@ -153,6 +162,7 @@ interface SummaryProps {
   readonly price: number
   readonly formatter: Intl.NumberFormat
   readonly isInvalid?: boolean
+  readonly isTrialing?: boolean
 }
 
 /**

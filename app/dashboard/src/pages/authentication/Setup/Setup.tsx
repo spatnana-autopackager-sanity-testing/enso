@@ -15,7 +15,7 @@ import * as ariaComponents from '#/components/AriaComponents'
 import Page from '#/components/Page'
 import * as stepper from '#/components/Stepper'
 
-import AuthenticationPage from '../AuthenticationPage'
+import { Plan } from '#/services/Backend'
 
 /**
  *
@@ -24,20 +24,43 @@ interface Step {
   readonly title: text.TextId
   readonly description?: text.TextId
   readonly text?: text.TextId
-  readonly component?: React.ComponentType
+  readonly component?: React.ComponentType<Context>
+  readonly canSkip?: boolean
+  readonly ignore?: (context: Context) => boolean
+}
+
+/**
+ *
+ */
+interface Context {
+  readonly plan: Plan | undefined
+  readonly goToNextStep: () => void
+  readonly goToPreviousStep: () => void
 }
 
 const BASE_STEPS: Step[] = [
   {
     title: 'choosePlan',
     text: 'choosePlanDescription',
+    canSkip: true,
+    component: () => <PlanSelector />,
+  },
+  {
+    title: 'setOrgNameTitle',
+    text: 'setOrgNameDescription',
+    ignore: context => context.plan === Plan.free || context.plan == null,
     component: () => {
       const { getText } = textProvider.useText()
+
       return (
-        <>
-          <ariaComponents.Text>{getText('choosePlan')}</ariaComponents.Text>
-          <PlanSelector />
-        </>
+        <ariaComponents.Input
+          name="organizationName"
+          autoFocus
+          inputMode="text"
+          autoComplete="off"
+          label={getText('organizationNameSettingsInput')}
+          description={getText('organizationNameSettingsInputDescription', 64)}
+        />
       )
     },
   },
@@ -49,6 +72,7 @@ const BASE_STEPS: Step[] = [
       return (
         <>
           <ariaComponents.Input
+            className="max-w-96"
             name="username"
             label={getText('setUsername')}
             placeholder={getText('usernamePlaceholder')}
@@ -79,6 +103,21 @@ export function Setup() {
     onCompleted: () => {
       console.log('completed')
     },
+    onStepChange: (step, direction) => {
+      const screen = steps[step]
+
+      if (screen?.ignore != null) {
+        if (
+          screen.ignore({ plan: Plan.free, goToNextStep: () => {}, goToPreviousStep: () => {} })
+        ) {
+          if (direction === 'forward') {
+            nextStep()
+          } else {
+            previousStep()
+          }
+        }
+      }
+    },
   })
 
   const currentScreen = steps.at(currentStep)
@@ -86,52 +125,67 @@ export function Setup() {
   invariant(currentScreen != null, 'Current screen not found')
 
   return (
-    <Page title={getText('setupEnso')}>
-      <stepper.Stepper
-        className="mx-auto mt-24 max-w-screen-xl"
-        state={stepperState}
-        renderStep={stepProps => {
-          const step = steps[stepProps.index]
+    <Page>
+      <div className="mx-auto mt-24 w-full max-w-screen-xl px-8 py-6">
+        <ariaComponents.Text.Heading level="1" className="mb-4">
+          {getText('setupEnso')}
+        </ariaComponents.Text.Heading>
 
-          invariant(step != null, 'Step not found')
+        <stepper.Stepper
+          state={stepperState}
+          renderStep={stepProps => {
+            const step = steps[stepProps.index]
 
-          return (
-            <stepper.Stepper.Step
-              {...stepProps}
-              title={getText(step.title)}
-              description={step.description && getText(step.description)}
-            >
-              {stepProps.isLast ? null : <ariaComponents.Separator variant="current" />}
-            </stepper.Stepper.Step>
-          )
-        }}
-      >
-        {({ isLast }) => (
-          <ariaComponents.Form key="Form" form={form} onSubmit={() => {}}>
-            {currentScreen.text && (
-              <ariaComponents.Text>{getText(currentScreen.text)}</ariaComponents.Text>
-            )}
+            invariant(step != null, 'Step not found')
 
-            {currentScreen.component && <currentScreen.component />}
-
-            <ariaComponents.ButtonGroup>
-              <ariaComponents.Button variant="outline" onPress={previousStep}>
-                {getText('back')}
-              </ariaComponents.Button>
-
-              {isLast ? (
-                <ariaComponents.Form.Submit />
-              ) : (
-                <ariaComponents.Button variant="primary" onPress={nextStep}>
-                  {getText('next')}
-                </ariaComponents.Button>
+            return (
+              <stepper.Stepper.Step
+                {...stepProps}
+                title={getText(step.title)}
+                description={step.description && getText(step.description)}
+              >
+                {stepProps.isLast ? null : <ariaComponents.Separator variant="current" />}
+              </stepper.Stepper.Step>
+            )
+          }}
+        >
+          {({ isLast, isFirst }) => (
+            <ariaComponents.Form key="Form" form={form} onSubmit={() => {}}>
+              {currentScreen.text && (
+                <ariaComponents.Text>{getText(currentScreen.text)}</ariaComponents.Text>
               )}
-            </ariaComponents.ButtonGroup>
 
-            <ariaComponents.Form.FormError />
-          </ariaComponents.Form>
-        )}
-      </stepper.Stepper>
+              {currentScreen.component && (
+                <currentScreen.component goToNextStep={nextStep} goToPreviousStep={previousStep} />
+              )}
+
+              <ariaComponents.ButtonGroup align="end">
+                {currentScreen.canSkip === true && (
+                  <ariaComponents.Button variant="ghost" onPress={nextStep}>
+                    {getText('skip')}
+                  </ariaComponents.Button>
+                )}
+
+                {!isFirst && (
+                  <ariaComponents.Button variant="outline" onPress={previousStep}>
+                    {getText('back')}
+                  </ariaComponents.Button>
+                )}
+
+                {isLast ? (
+                  <ariaComponents.Form.Submit />
+                ) : (
+                  <ariaComponents.Button variant="primary" onPress={nextStep}>
+                    {getText('next')}
+                  </ariaComponents.Button>
+                )}
+              </ariaComponents.ButtonGroup>
+
+              <ariaComponents.Form.FormError />
+            </ariaComponents.Form>
+          )}
+        </stepper.Stepper>
+      </div>
     </Page>
   )
 }
