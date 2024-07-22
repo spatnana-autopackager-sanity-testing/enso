@@ -95,17 +95,16 @@ export function Setup() {
     schema: z =>
       z.object({
         username: z.string().min(3).max(24),
+        organizationName: z.string().min(1).max(64),
+        plan: z.nativeEnum(Plan),
       }),
+    defaultValues: { plan: Plan.free },
   })
 
   const { stepperState, nextStep, previousStep, currentStep } = stepper.useStepperState({
     steps: steps.length,
-    onCompleted: () => {
-      console.log('completed')
-    },
     onStepChange: (step, direction) => {
       const screen = steps[step]
-
       if (screen?.ignore != null) {
         if (
           screen.ignore({ plan: Plan.free, goToNextStep: () => {}, goToPreviousStep: () => {} })
@@ -143,6 +142,13 @@ export function Setup() {
                 {...stepProps}
                 title={getText(step.title)}
                 description={step.description && getText(step.description)}
+                isDisabled={
+                  step.ignore?.({
+                    plan: form.getValues('plan'),
+                    goToNextStep: () => {},
+                    goToPreviousStep: () => {},
+                  }) ?? false
+                }
               >
                 {stepProps.isLast ? null : <ariaComponents.Separator variant="current" />}
               </stepper.Stepper.Step>
@@ -156,7 +162,11 @@ export function Setup() {
               )}
 
               {currentScreen.component && (
-                <currentScreen.component goToNextStep={nextStep} goToPreviousStep={previousStep} />
+                <currentScreen.component
+                  goToNextStep={nextStep}
+                  goToPreviousStep={previousStep}
+                  plan={form.watch('plan')}
+                />
               )}
 
               <ariaComponents.ButtonGroup align="end">
