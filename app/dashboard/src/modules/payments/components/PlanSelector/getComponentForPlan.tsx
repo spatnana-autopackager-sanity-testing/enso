@@ -18,12 +18,7 @@ import * as ariaComponents from '#/components/AriaComponents'
 import * as backendModule from '#/services/Backend'
 
 import * as constants from '../../constants'
-import {
-  PlanSelectorDialog,
-  SubscribeButton,
-  type PlanSelectorDialogProps,
-  type SubscribeButtonProps,
-} from './components'
+import { SubscribeButton, type SubscribeButtonProps } from './components'
 
 /**
  * The component for a plan.
@@ -34,17 +29,8 @@ export interface ComponentForPlan {
   readonly title: text.TextId
   readonly subtitle: text.TextId
   readonly learnMore: () => React.ReactNode
-  readonly submitButton: (props: SubmitButtonProps) => React.ReactNode
+  readonly submitButton: (props: SubscribeButtonProps) => React.ReactNode
   readonly elevated?: boolean
-}
-
-/**
- * The props for the submit dialog.
- */
-export interface SubmitButtonProps
-  extends Omit<PlanSelectorDialogProps, 'planName' | 'title'>,
-    SubscribeButtonProps {
-  readonly defaultOpen?: boolean
 }
 
 /**
@@ -71,24 +57,7 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
     features: 'freePlanFeatures',
     title: constants.PLAN_TO_TEXT_ID['free'],
     subtitle: 'freePlanSubtitle',
-    submitButton: props => {
-      const {
-        isDowngrade = false,
-        isCurrent = false,
-        userHasSubscription = false,
-        canTrial = false,
-      } = props
-
-      return (
-        <SubscribeButton
-          userHasSubscription={userHasSubscription}
-          isDisabled={true}
-          isDowngrade={isDowngrade}
-          isCurrent={isCurrent}
-          canTrial={canTrial}
-        />
-      )
-    },
+    submitButton: props => <SubscribeButton {...props} isDisabled={true} />,
   },
   [backendModule.Plan.solo]: {
     learnMore: () => {
@@ -108,44 +77,7 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
       )
     },
     pricing: 'soloPlanPricing',
-    submitButton: props => {
-      const {
-        onSubmit,
-        defaultOpen = false,
-        plan,
-        isDowngrade = false,
-        isCurrent = false,
-        isDisabled = false,
-        userHasSubscription = false,
-        canTrial = false,
-        features,
-      } = props
-
-      const { getText } = textProvider.useText()
-
-      const disabled = isCurrent || isDowngrade || isDisabled
-
-      return (
-        <ariaComponents.DialogTrigger defaultOpen={disabled ? false : defaultOpen}>
-          <SubscribeButton
-            userHasSubscription={userHasSubscription}
-            isDisabled={isDisabled}
-            isDowngrade={isDowngrade}
-            isCurrent={isCurrent}
-            canTrial={canTrial}
-          />
-
-          <PlanSelectorDialog
-            title={getText('upgradeTo', getText(plan))}
-            onSubmit={onSubmit}
-            planName={getText(plan)}
-            features={features}
-            plan={plan}
-            isTrialing={canTrial}
-          />
-        </ariaComponents.DialogTrigger>
-      )
-    },
+    submitButton: SubscribeButton,
     features: 'soloPlanFeatures',
     subtitle: 'soloPlanSubtitle',
     title: constants.PLAN_TO_TEXT_ID['solo'],
@@ -172,44 +104,7 @@ const COMPONENT_PER_PLAN: Record<backendModule.Plan, ComponentForPlan> = {
     title: constants.PLAN_TO_TEXT_ID['team'],
     subtitle: 'teamPlanSubtitle',
     elevated: true,
-    submitButton: props => {
-      const {
-        onSubmit,
-        defaultOpen = false,
-        plan,
-        isDowngrade = false,
-        isCurrent = false,
-        isDisabled = false,
-        userHasSubscription = false,
-        canTrial = false,
-        features,
-      } = props
-
-      const { getText } = textProvider.useText()
-
-      const disabled = isCurrent || isDowngrade || isDisabled
-
-      return (
-        <ariaComponents.DialogTrigger defaultOpen={disabled ? false : defaultOpen}>
-          <SubscribeButton
-            userHasSubscription={userHasSubscription}
-            isDisabled={isDisabled}
-            isDowngrade={isDowngrade}
-            isCurrent={isCurrent}
-            canTrial={canTrial}
-          />
-
-          <PlanSelectorDialog
-            title={getText('upgradeTo', getText(plan))}
-            onSubmit={onSubmit}
-            planName={getText(plan)}
-            features={features}
-            plan={plan}
-            isTrialing={canTrial}
-          />
-        </ariaComponents.DialogTrigger>
-      )
-    },
+    submitButton: SubscribeButton,
   },
   [backendModule.Plan.enterprise]: {
     learnMore: () => {

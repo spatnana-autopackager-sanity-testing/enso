@@ -64,6 +64,7 @@ export function Subscribe() {
 
         <paymentModule.PlanSelector
           plan={chosenPlan}
+          showFreePlan={false}
           userPlan={user.plan}
           onSubscribeSuccess={plan => {
             navigate({ pathname: appUtils.SUBSCRIBE_SUCCESS_PATH, search: `plan=${plan}` })

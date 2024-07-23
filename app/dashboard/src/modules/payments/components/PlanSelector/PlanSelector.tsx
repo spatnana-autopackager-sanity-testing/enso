@@ -110,6 +110,7 @@ export function PlanSelector(props: PlanSelectorProps) {
                     defaultOpen={newPlan === plan}
                     features={planProps.features}
                     canTrial={hasTrial}
+                    planName={getText(newPlan)}
                   />
                 }
                 learnMore={<planProps.learnMore />}

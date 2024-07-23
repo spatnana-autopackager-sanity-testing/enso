@@ -1,21 +1,26 @@
 /**
+ * @file
  * The subscribe button component.
  */
 import { getSalesEmail } from '#/appUtils'
 
 import { useText } from '#/providers/TextProvider'
 
-import { Button, Text } from '#/components/AriaComponents'
+import { Button, DialogTrigger, Text } from '#/components/AriaComponents'
+
+import { PlanSelectorDialog, type PlanSelectorDialogProps } from './PlanSelectorDialog'
 
 /**
  * The props for the submit button.
  */
-export interface SubscribeButtonProps {
+export interface SubscribeButtonProps
+  extends Omit<PlanSelectorDialogProps, 'isTrialing' | 'title'> {
   readonly userHasSubscription: boolean
   readonly isCurrent?: boolean
   readonly isDowngrade?: boolean
   readonly isDisabled?: boolean
   readonly canTrial?: boolean
+  readonly defaultOpen?: boolean
 }
 
 /**
@@ -23,15 +28,19 @@ export interface SubscribeButtonProps {
  */
 export function SubscribeButton(props: SubscribeButtonProps) {
   const {
+    defaultOpen = false,
     userHasSubscription,
     isCurrent = false,
     isDowngrade = false,
     isDisabled = false,
     canTrial = false,
+    plan,
+    onSubmit,
+    planName,
+    features,
   } = props
 
   const { getText } = useText()
-  const disabled = isCurrent || isDowngrade || isDisabled
 
   const buttonText = (() => {
     if (isDowngrade) {
@@ -50,15 +59,12 @@ export function SubscribeButton(props: SubscribeButtonProps) {
     }
 
     // eslint-disable-next-line no-restricted-syntax
-    return getText('subscribe')
+    return canTrial ? getText('trialDescription') : getText('subscribe')
   })()
 
   const description = (() => {
-    if (isCurrent) {
-      return null
-    }
-
     if (isDowngrade) {
+      // eslint-disable-next-line no-restricted-syntax
       return (
         <>
           {getText('downgradeInfo')}{' '}
@@ -69,40 +75,46 @@ export function SubscribeButton(props: SubscribeButtonProps) {
       )
     }
 
-    if (canTrial) {
-      return getText('trialDescription')
-    }
-
     return null
   })()
 
   const variant = (() => {
     if (isCurrent) {
+      // eslint-disable-next-line no-restricted-syntax
       return 'outline'
     }
 
     if (isDowngrade) {
+      // eslint-disable-next-line no-restricted-syntax
       return 'outline'
     }
 
     return 'submit'
   })()
 
+  const disabled = isCurrent || isDowngrade || isDisabled
+
   return (
     <div className="w-full text-center">
-      <Button fullWidth isDisabled={disabled} variant={variant} size="large" rounded="full">
-        {buttonText}
-      </Button>
+      <DialogTrigger defaultOpen={disabled ? false : defaultOpen}>
+        <Button fullWidth isDisabled={disabled} variant={variant} size="medium" rounded="full">
+          {buttonText}
+        </Button>
 
-      {canTrial && !isCurrent && !isDowngrade && (
-        <>
-          <Text transform="capitalize" className="my-0.5 flex">
-            {getText('or')}
-          </Text>
-          <Button variant="outline" fullWidth>
-            {description}
-          </Button>
-        </>
+        <PlanSelectorDialog
+          plan={plan}
+          planName={planName}
+          features={features}
+          onSubmit={onSubmit}
+          isTrialing={canTrial}
+          title={getText('upgradeTo', getText(plan))}
+        />
+      </DialogTrigger>
+
+      {isDowngrade && (
+        <Text transform="capitalize" className="my-0.5">
+          {description}
+        </Text>
       )}
     </div>
   )

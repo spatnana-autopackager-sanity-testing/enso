@@ -81,6 +81,7 @@ export interface SetOrganizationNameFormProps {
 
 const ORGANIZATION_NAME_MAX_LENGTH = 64
 
+// eslint-disable-next-line no-restricted-syntax
 export const SET_ORGANIZATION_NAME_FORM_SCHEMA = (getText: GetText) =>
   ariaComponents.Form.schema.object({
     name: ariaComponents.Form.schema

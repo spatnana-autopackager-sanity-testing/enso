@@ -73,7 +73,6 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
         <Text.Heading
           level="2"
           variant="subtitle"
-          transform="uppercase"
           weight="medium"
           disableLineHeightCompensation
           className="-mt-0.5"
@@ -83,7 +82,7 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
 
         <Text variant="h1" weight="medium" disableLineHeightCompensation className="mb-2 block">
           {isTrialing
-            ? getText('tryFree', 14) +
+            ? getText('tryFree', 30) +
               getText('priceTemplate', formatter.format(price), getText('billedAnnually'))
             : getText('priceTemplate', formatter.format(price), getText('billedAnnually'))}
         </Text>
@@ -140,7 +139,7 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
                     form={form}
                     elements={elements}
                     stripeInstance={stripe}
-                    submitText={getText('subscribeSubmit')}
+                    submitText={isTrialing ? getText('startTrial') : getText('subscribeSubmit')}
                     onSubmit={onSubmit}
                   />
                 )}

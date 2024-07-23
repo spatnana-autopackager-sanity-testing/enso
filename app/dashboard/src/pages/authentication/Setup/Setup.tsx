@@ -4,18 +4,28 @@
  */
 import * as React from 'react'
 
-import { PlanSelector } from '#/modules/payments'
+import { useNavigate } from 'react-router'
 import invariant from 'tiny-invariant'
 
 import type * as text from 'enso-common/src/text'
 
+import { DASHBOARD_PATH } from '#/appUtils'
+
 import * as textProvider from '#/providers/TextProvider'
 
 import * as ariaComponents from '#/components/AriaComponents'
+import type { FormInstance } from '#/components/AriaComponents'
 import Page from '#/components/Page'
 import * as stepper from '#/components/Stepper'
 
 import { Plan } from '#/services/Backend'
+import { PlanSelector } from '#/modules/payments'
+
+const SETUP_SCHEMA = ariaComponents.Form.schema.object({
+  username: ariaComponents.Form.schema.string().min(3).max(24),
+  organizationName: ariaComponents.Form.schema.string().min(1).max(64),
+  plan: ariaComponents.Form.schema.nativeEnum(Plan),
+})
 
 /**
  * Step in the setup process
@@ -26,6 +36,7 @@ interface Step {
   readonly text?: text.TextId
   readonly component?: React.ComponentType<Context>
   readonly canSkip?: boolean
+  readonly hideNext?: boolean
   readonly ignore?: (context: Context) => boolean
 }
 
@@ -33,6 +44,7 @@ interface Step {
  * Context for the setup process
  */
 interface Context {
+  readonly form: FormInstance<typeof SETUP_SCHEMA>
   readonly plan: Plan | undefined
   readonly goToNextStep: () => void
   readonly goToPreviousStep: () => void
@@ -43,7 +55,15 @@ const BASE_STEPS: Step[] = [
     title: 'choosePlan',
     text: 'choosePlanDescription',
     canSkip: true,
-    component: () => <PlanSelector />,
+    hideNext: true,
+    component: ({ form, goToNextStep }) => (
+      <PlanSelector
+        onSubscribeSuccess={plan => {
+          form.setValue('plan', plan)
+          goToNextStep()
+        }}
+      />
+    ),
   },
   {
     title: 'setOrgNameTitle',
@@ -55,6 +75,7 @@ const BASE_STEPS: Step[] = [
       return (
         <ariaComponents.Input
           name="organizationName"
+          className="max-w-96"
           autoFocus
           inputMode="text"
           autoComplete="off"
@@ -91,13 +112,10 @@ export function Setup() {
   const { getText } = textProvider.useText()
   const steps = BASE_STEPS
 
+  const navigate = useNavigate()
+
   const form = ariaComponents.Form.useForm({
-    schema: z =>
-      z.object({
-        username: z.string().min(3).max(24),
-        organizationName: z.string().min(1).max(64),
-        plan: z.nativeEnum(Plan),
-      }),
+    schema: SETUP_SCHEMA,
     defaultValues: { plan: Plan.free },
   })
 
@@ -107,7 +125,12 @@ export function Setup() {
       const screen = steps[step]
       if (screen?.ignore != null) {
         if (
-          screen.ignore({ plan: Plan.free, goToNextStep: () => {}, goToPreviousStep: () => {} })
+          screen.ignore({
+            form,
+            plan: form.getValues('plan'),
+            goToNextStep: () => {},
+            goToPreviousStep: () => {},
+          })
         ) {
           if (direction === 'forward') {
             nextStep()
@@ -147,6 +170,7 @@ export function Setup() {
                     plan: form.getValues('plan'),
                     goToNextStep: () => {},
                     goToPreviousStep: () => {},
+                    form,
                   }) ?? false
                 }
               >
@@ -156,7 +180,13 @@ export function Setup() {
           }}
         >
           {({ isLast, isFirst }) => (
-            <ariaComponents.Form key="Form" form={form} onSubmit={() => {}}>
+            <ariaComponents.Form
+              key="Form"
+              form={form}
+              onSubmit={() => {
+                navigate(DASHBOARD_PATH)
+              }}
+            >
               {currentScreen.text && (
                 <ariaComponents.Text>{getText(currentScreen.text)}</ariaComponents.Text>
               )}
@@ -166,6 +196,7 @@ export function Setup() {
                   goToNextStep={nextStep}
                   goToPreviousStep={previousStep}
                   plan={form.watch('plan')}
+                  form={form}
                 />
               )}
 
@@ -182,13 +213,13 @@ export function Setup() {
                   </ariaComponents.Button>
                 )}
 
-                {isLast ? (
-                  <ariaComponents.Form.Submit />
-                ) : (
+                {isLast && <ariaComponents.Form.Submit />}
+
+                {currentScreen.hideNext !== true && !isLast ? (
                   <ariaComponents.Button variant="primary" onPress={nextStep}>
                     {getText('next')}
                   </ariaComponents.Button>
-                )}
+                ) : null}
               </ariaComponents.ButtonGroup>
 
               <ariaComponents.Form.FormError />
