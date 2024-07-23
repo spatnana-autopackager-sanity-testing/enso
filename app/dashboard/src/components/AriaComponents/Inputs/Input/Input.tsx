@@ -81,9 +81,10 @@ export const Input = React.forwardRef(function Input<
   })
 
   const classes = variants.INPUT_STYLES({
-    invalid: fieldState.invalid,
     size,
     rounded,
+    invalid: fieldState.invalid,
+    readOnly: inputProps.readOnly,
     disabled: isDisabled || formInstance.formState.isSubmitting,
   })
 

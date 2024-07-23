@@ -54,7 +54,8 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
         seats: z
           .number()
           .min(1)
-          .max(maxSeats, { message: getText('wantMoreSeats') }),
+          .max(maxSeats, { message: getText('wantMoreSeats') })
+          .refine(value => Number.isInteger(value), { message: getText('arbitraryFieldInvalid') }),
       }),
     defaultValues: { seats: 1 },
     mode: 'onChange',
@@ -103,20 +104,18 @@ export function PlanSelectorDialog(props: PlanSelectorDialogProps) {
               <Text variant="subtitle">{getText('adjustYourPlan')}</Text>
 
               <Form form={form}>
-                <div className="grid w-full grid-cols-1 items-center">
-                  <Input
-                    isDisabled={maxSeats === 1}
-                    isRequired
-                    form={form}
-                    name="seats"
-                    type="number"
-                    inputMode="numeric"
-                    size="small"
-                    min="1"
-                    label={getText('seats')}
-                    description={getText(`${plan}PlanSeatsDescription`, maxSeats)}
-                  />
-                </div>
+                <Input
+                  isRequired
+                  readOnly={maxSeats === 1}
+                  form={form}
+                  name="seats"
+                  type="number"
+                  inputMode="decimal"
+                  size="small"
+                  min="1"
+                  label={getText('seats')}
+                  description={getText(`${plan}PlanSeatsDescription`, maxSeats)}
+                />
               </Form>
             </div>
           </div>

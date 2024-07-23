@@ -27,7 +27,6 @@ import * as textProvider from '#/providers/TextProvider'
 import * as ariaComponents from '#/components/AriaComponents'
 import * as resultComponent from '#/components/Result'
 
-import type Backend from '#/services/Backend'
 import * as backendModule from '#/services/Backend'
 import type RemoteBackend from '#/services/RemoteBackend'
 
@@ -93,7 +92,7 @@ interface AuthContextType {
   ) => Promise<boolean>
   readonly authQueryKey: reactQuery.QueryKey
   readonly confirmSignUp: (email: string, code: string) => Promise<boolean>
-  readonly setUsername: (backend: Backend, username: string, email: string) => Promise<boolean>
+  readonly setUsername: (username: string) => Promise<boolean>
   readonly signInWithGoogle: () => Promise<boolean>
   readonly signInWithGitHub: () => Promise<boolean>
   readonly signInWithPassword: (email: string, password: string) => Promise<boolean>
@@ -345,39 +344,23 @@ export default function AuthProvider(props: AuthProviderProps) {
     }
   }
 
-  const setUsername = async (backend: Backend, username: string, email: string) => {
+  const setUsername = async (username: string) => {
     if (cognito == null) {
-      return false
-    } else if (backend.type === backendModule.BackendType.local) {
-      toastError(getText('setUsernameLocalBackendError'))
       return false
     } else {
       gtagEvent('cloud_user_created')
 
       try {
         const organizationId = await cognito.organizationId()
-        // This should not omit success and error toasts as it is not possible
-        // to render this optimistically.
-        await toast.toast.promise(
-          createUserMutation.mutateAsync({
-            userName: username,
-            userEmail: backendModule.EmailAddress(email),
-            organizationId:
-              organizationId != null ? backendModule.OrganizationId(organizationId) : null,
-          }),
-          {
-            success: getText('setUsernameSuccess'),
-            error: getText('setUsernameError'),
-            pending: getText('settingUsername'),
-          }
-        )
-        const redirectTo = localStorage.get('loginRedirect')
-        if (redirectTo != null) {
-          localStorage.delete('loginRedirect')
-          location.href = redirectTo
-        } else {
-          navigate(appUtils.DASHBOARD_PATH)
-        }
+        const email = session?.email ?? ''
+
+        await createUserMutation.mutateAsync({
+          userName: username,
+          userEmail: backendModule.EmailAddress(email),
+          organizationId:
+            organizationId != null ? backendModule.OrganizationId(organizationId) : null,
+        })
+
         return true
       } catch {
         return false
@@ -614,7 +597,7 @@ export function ProtectedLayout() {
   if (session == null) {
     return <router.Navigate to={appUtils.LOGIN_PATH} />
   } else if (session.type === UserSessionType.partial) {
-    return <router.Navigate to={appUtils.SET_USERNAME_PATH} />
+    return <router.Navigate to={appUtils.SETUP_PATH} />
   } else {
     return <router.Outlet context={session} />
   }
@@ -654,7 +637,7 @@ export function GuestLayout() {
   const { localStorage } = localStorageProvider.useLocalStorage()
 
   if (session?.type === UserSessionType.partial) {
-    return <router.Navigate to={appUtils.SET_USERNAME_PATH} />
+    return <router.Navigate to={appUtils.SETUP_PATH} />
   } else if (session?.type === UserSessionType.full) {
     const redirectTo = localStorage.get('loginRedirect')
     if (redirectTo != null) {

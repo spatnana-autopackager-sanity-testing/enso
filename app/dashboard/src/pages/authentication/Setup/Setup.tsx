@@ -4,17 +4,20 @@
  */
 import * as React from 'react'
 
-import { useNavigate } from 'react-router'
+import { Navigate } from 'react-router'
 import invariant from 'tiny-invariant'
 
 import type * as text from 'enso-common/src/text'
 
 import { DASHBOARD_PATH } from '#/appUtils'
 
+import { useIsFirstRender } from '#/hooks/mountHooks'
+
+import { useAuth, UserSessionType } from '#/providers/AuthProvider'
 import * as textProvider from '#/providers/TextProvider'
 
-import * as ariaComponents from '#/components/AriaComponents'
 import type { FormInstance } from '#/components/AriaComponents'
+import * as ariaComponents from '#/components/AriaComponents'
 import Page from '#/components/Page'
 import * as stepper from '#/components/Stepper'
 
@@ -22,7 +25,6 @@ import { Plan } from '#/services/Backend'
 import { PlanSelector } from '#/modules/payments'
 
 const SETUP_SCHEMA = ariaComponents.Form.schema.object({
-  username: ariaComponents.Form.schema.string().min(3).max(24),
   organizationName: ariaComponents.Form.schema.string().min(1).max(64),
   plan: ariaComponents.Form.schema.nativeEnum(Plan),
 })
@@ -37,6 +39,7 @@ interface Step {
   readonly component?: React.ComponentType<Context>
   readonly canSkip?: boolean
   readonly hideNext?: boolean
+  readonly hidePrevious?: boolean
   readonly ignore?: (context: Context) => boolean
 }
 
@@ -52,14 +55,48 @@ interface Context {
 
 const BASE_STEPS: Step[] = [
   {
+    title: 'setUsername',
+    text: 'setUsernameDescription',
+    hideNext: true,
+    /**
+     * Step component
+     */
+    component: function Step({ goToNextStep }) {
+      const { setUsername } = useAuth()
+      const { getText } = textProvider.useText()
+      return (
+        <ariaComponents.Form
+          schema={z => z.object({ username: z.string().min(3).max(24) })}
+          onSubmit={({ username }) => setUsername(username)}
+          onSubmitSuccess={goToNextStep}
+        >
+          <ariaComponents.Input
+            className="max-w-96"
+            name="username"
+            label={getText('userNameSettingsInput')}
+            placeholder={getText('usernamePlaceholder')}
+            description="Minimum 3 characters, maximum 24 characters"
+          />
+
+          <ariaComponents.Form.Submit>{getText('setUsername')}</ariaComponents.Form.Submit>
+
+          <ariaComponents.Form.FormError />
+        </ariaComponents.Form>
+      )
+    },
+  },
+  {
     title: 'choosePlan',
     text: 'choosePlanDescription',
     canSkip: true,
     hideNext: true,
-    component: ({ form, goToNextStep }) => (
+    hidePrevious: true,
+    component: ({ form, goToNextStep, plan }) => (
       <PlanSelector
-        onSubscribeSuccess={plan => {
-          form.setValue('plan', plan)
+        userPlan={plan}
+        hasTrial={plan == null}
+        onSubscribeSuccess={newPlan => {
+          form.setValue('plan', newPlan)
           goToNextStep()
         }}
       />
@@ -85,24 +122,6 @@ const BASE_STEPS: Step[] = [
       )
     },
   },
-  {
-    title: 'setUsername',
-    text: 'setUsernameDescription',
-    component: () => {
-      const { getText } = textProvider.useText()
-      return (
-        <>
-          <ariaComponents.Input
-            className="max-w-96"
-            name="username"
-            label={getText('setUsername')}
-            placeholder={getText('usernamePlaceholder')}
-            description="Minimum 3 characters, maximum 24 characters"
-          />
-        </>
-      )
-    },
-  },
 ]
 
 /**
@@ -110,28 +129,22 @@ const BASE_STEPS: Step[] = [
  */
 export function Setup() {
   const { getText } = textProvider.useText()
-  const steps = BASE_STEPS
-
-  const navigate = useNavigate()
+  const { session } = useAuth()
+  const isFirstRender = useIsFirstRender()
 
   const form = ariaComponents.Form.useForm({
     schema: SETUP_SCHEMA,
     defaultValues: { plan: Plan.free },
   })
 
+  const steps = BASE_STEPS
+
   const { stepperState, nextStep, previousStep, currentStep } = stepper.useStepperState({
     steps: steps.length,
     onStepChange: (step, direction) => {
       const screen = steps[step]
       if (screen?.ignore != null) {
-        if (
-          screen.ignore({
-            form,
-            plan: form.getValues('plan'),
-            goToNextStep: () => {},
-            goToPreviousStep: () => {},
-          })
-        ) {
+        if (screen.ignore(context)) {
           if (direction === 'forward') {
             nextStep()
           } else {
@@ -142,9 +155,23 @@ export function Setup() {
     },
   })
 
+  const context = {
+    form,
+    plan: form.watch('plan'),
+    goToNextStep: nextStep,
+    goToPreviousStep: previousStep,
+  }
+
   const currentScreen = steps.at(currentStep)
 
   invariant(currentScreen != null, 'Current screen not found')
+
+  if (isFirstRender()) {
+    if (session?.type === UserSessionType.full) {
+      // eslint-disable-next-line no-restricted-syntax
+      return <Navigate to={DASHBOARD_PATH} replace />
+    }
+  }
 
   return (
     <Page>
@@ -165,14 +192,7 @@ export function Setup() {
                 {...stepProps}
                 title={getText(step.title)}
                 description={step.description && getText(step.description)}
-                isDisabled={
-                  step.ignore?.({
-                    plan: form.getValues('plan'),
-                    goToNextStep: () => {},
-                    goToPreviousStep: () => {},
-                    form,
-                  }) ?? false
-                }
+                isDisabled={step.ignore?.(context) ?? false}
               >
                 {stepProps.isLast ? null : <ariaComponents.Separator variant="current" />}
               </stepper.Stepper.Step>
@@ -180,13 +200,7 @@ export function Setup() {
           }}
         >
           {({ isLast, isFirst }) => (
-            <ariaComponents.Form
-              key="Form"
-              form={form}
-              onSubmit={() => {
-                navigate(DASHBOARD_PATH)
-              }}
-            >
+            <>
               {currentScreen.text && (
                 <ariaComponents.Text>{getText(currentScreen.text)}</ariaComponents.Text>
               )}
@@ -221,9 +235,7 @@ export function Setup() {
                   </ariaComponents.Button>
                 ) : null}
               </ariaComponents.ButtonGroup>
-
-              <ariaComponents.Form.FormError />
-            </ariaComponents.Form>
+            </>
           )}
         </stepper.Stepper>
       </div>

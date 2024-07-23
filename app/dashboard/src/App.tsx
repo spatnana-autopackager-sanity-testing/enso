@@ -484,15 +484,10 @@ function AppRouter(props: AppRouterProps) {
       </router.Route>
 
       <router.Route element={<termsOfServiceModal.TermsOfServiceModal />}>
-        {/* Semi-protected pages are visible to users currently registering. */}
         <router.Route element={<authProvider.NotDeletedUserLayout />}>
-          <router.Route element={<authProvider.SemiProtectedLayout />}>
-            <router.Route path={appUtils.SET_USERNAME_PATH} element={<SetUsername />} />
-          </router.Route>
+          <router.Route path={appUtils.SETUP_PATH} element={<setup.Setup />} />
         </router.Route>
       </router.Route>
-
-      <router.Route path={appUtils.SET_UP} element={<setup.Setup />} />
 
       {/* Other pages are visible to unauthenticated and authenticated users. */}
       <router.Route path={appUtils.CONFIRM_REGISTRATION_PATH} element={<ConfirmRegistration />} />

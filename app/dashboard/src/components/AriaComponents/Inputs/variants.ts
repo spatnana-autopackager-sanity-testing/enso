@@ -19,13 +19,13 @@ export const INPUT_STYLES = twv.tv({
       // Specified in compoundVariants. Real classes depend on Variants
       true: '',
     },
+    readOnly: {
+      true: 'cursor-default',
+      false: 'cursor-text',
+    },
     size: {
-      medium: {
-        base: 'px-[11px] pb-1.5 pt-2',
-      },
-      small: {
-        base: 'px-[11px] pb-0.5 pt-1',
-      },
+      medium: { base: 'px-[11px] pb-1.5 pt-2' },
+      small: { base: 'px-[11px] pb-0.5 pt-1' },
     },
     rounded: {
       none: 'rounded-none',
@@ -64,6 +64,10 @@ export const INPUT_STYLES = twv.tv({
       invalid: true,
       variant: 'outline',
       class: { base: 'border-danger focus-within:border-danger focus-within:outline-danger' },
+    },
+    {
+      readOnly: true,
+      class: { base: 'focus-within:outline-transparent' },
     },
   ],
   defaultVariants: {

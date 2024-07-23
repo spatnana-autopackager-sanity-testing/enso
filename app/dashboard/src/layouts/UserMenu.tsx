@@ -90,9 +90,7 @@ export default function UserMenu(props: UserMenuProps) {
               {user.name}
             </Text>
 
-            <Text disableLineHeightCompensation>
-              {getText(`${user.plan ?? Plan.free}PlanName`)}
-            </Text>
+            <Text disableLineHeightCompensation>{getText(`${user.plan ?? Plan.free}`)}</Text>
           </div>
         </div>
         <div
