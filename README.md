@@ -70,7 +70,7 @@ always trust the results you get.
 <img align="left" width="44px" src="https://raw.githubusercontent.com/enso-org/icons/master/blue/with-bg/it/badges/018-military.svg">
 <ul><ul>
     <b>Reproducible, trustworthy results.</b><br/>
-    Versioning and visual data quality management allow you to trust the results
+    Versioning and visual data quality management allow you to trust the results 
     that you get.
   <br/><a href="https://enso.org">Learn more →<a/>
 </ul></ul>
